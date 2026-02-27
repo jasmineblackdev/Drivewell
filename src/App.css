@@ -1,4 +1,4 @@
-/* Global Styles for DriveWell */
+/* ─── Reset ──────────────────────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -11,6 +11,9 @@ body {
   color: #333;
 }
 
+/* ─── Layout shell ───────────────────────────────────────────── */
+
+/* Mobile-first: single centered column */
 .app-container {
   max-width: 480px;
   margin: 0 auto;
@@ -19,21 +22,79 @@ body {
   position: relative;
 }
 
-/* DOT Status Colors */
-.status-green { color: #22c55e; }
-.status-yellow { color: #eab308; }
-.status-red { color: #ef4444; }
-
-.bg-status-green { background-color: #22c55e; }
-.bg-status-yellow { background-color: #eab308; }
-.bg-status-red { background-color: #ef4444; }
-
-/* Common Styles */
-.screen {
-  padding: 20px;
-  padding-bottom: 100px; /* Account for bottom nav */
+/* iPad (≥ 640px): widen container */
+@media (min-width: 640px) {
+  .app-container {
+    max-width: 768px;
+  }
 }
 
+/* Desktop (≥ 1024px): full-width shell with sidebar */
+@media (min-width: 1024px) {
+  body {
+    background-color: #f0f2f5;
+  }
+
+  .app-container {
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    background: transparent;
+  }
+
+  /* The sidebar nav lives inside .app-container on desktop */
+  .sidebar-nav {
+    display: flex !important; /* unhide */
+  }
+
+  .bottom-nav {
+    display: none !important; /* hide bottom nav */
+  }
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    background: #f0f2f5;
+  }
+}
+
+/* ─── DOT Status Colors ──────────────────────────────────────── */
+.status-green  { color: #22c55e; }
+.status-yellow { color: #eab308; }
+.status-red    { color: #ef4444; }
+
+.bg-status-green  { background-color: #22c55e; }
+.bg-status-yellow { background-color: #eab308; }
+.bg-status-red    { background-color: #ef4444; }
+
+/* ─── Screen wrapper ─────────────────────────────────────────── */
+.screen {
+  padding: 20px;
+  padding-bottom: 100px; /* bottom nav clearance */
+}
+
+/* iPad */
+@media (min-width: 640px) {
+  .screen {
+    padding: 28px 32px;
+    padding-bottom: 80px;
+    max-width: 768px;
+    margin: 0 auto;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .screen {
+    padding: 36px 48px;
+    padding-bottom: 48px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
+
+/* ─── Card ───────────────────────────────────────────────────── */
 .card {
   background: white;
   border-radius: 12px;
@@ -42,6 +103,14 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+@media (min-width: 640px) {
+  .card {
+    padding: 24px;
+    border-radius: 14px;
+  }
+}
+
+/* ─── Buttons ────────────────────────────────────────────────── */
 .btn-primary {
   background: #2563eb;
   color: white;
@@ -51,6 +120,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   font-size: 16px;
+  transition: background 0.2s;
 }
 
 .btn-primary:hover {
@@ -66,8 +136,14 @@ body {
   font-weight: 600;
   cursor: pointer;
   font-size: 16px;
+  transition: background 0.2s;
 }
 
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* ─── Metric row ─────────────────────────────────────────────── */
 .metric-item {
   display: flex;
   justify-content: space-between;
@@ -78,4 +154,32 @@ body {
 
 .metric-item:last-child {
   border-bottom: none;
+}
+
+/* ─── Responsive grid helpers ────────────────────────────────── */
+
+/* 2-col card grid on iPad+ */
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .card-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Page header typography */
+@media (min-width: 640px) {
+  .screen header h1 {
+    font-size: 32px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .screen header h1 {
+    font-size: 36px !important;
+  }
 }
