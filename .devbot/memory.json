@@ -1,6 +1,10 @@
 {
   "stack": "Web development (responsive design)",
-  "keyFiles": [],
-  "conventions": "Mobile-first responsive design approach for multiple device breakpoints. Responsive navigation implementation required.",
-  "updatedAt": "2026-02-27T16:28:28.799Z"
+  "keyFiles": [
+    "onboarding.js",
+    "onboarding.css",
+    "onboardingFlow.ts"
+  ],
+  "conventions": "Mobile-first responsive design approach for multiple device breakpoints. Responsive navigation implementation required. Onboarding flow component structure with step-based progression.",
+  "updatedAt": "2026-02-27T16:56:44.567Z"
 }
