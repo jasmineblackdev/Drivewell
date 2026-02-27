@@ -39,10 +39,10 @@ const Dashboard = () => {
     <div className="screen">
       <header style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>
-          Welcome back, {mockUser.name.split(' ')[0]}
+          Welcome back, {name.split(' ')[0]}
         </h1>
         <p style={{ color: '#6b7280' }}>
-          CDL: {mockUser.cdlNumber}
+          CDL: {cdlNumber}
         </p>
       </header>
 
@@ -78,13 +78,13 @@ const Dashboard = () => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>
-              {mockUser.metrics.weight}
+              {metrics.weight}
             </p>
             <p style={{ color: '#6b7280', fontSize: '14px' }}>Weight (lbs)</p>
           </div>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>
-              {mockUser.metrics.bloodPressure.systolic}/{mockUser.metrics.bloodPressure.diastolic}
+              {metrics.bloodPressure.systolic}/{metrics.bloodPressure.diastolic}
             </p>
             <p style={{ color: '#6b7280', fontSize: '14px' }}>Blood Pressure</p>
           </div>

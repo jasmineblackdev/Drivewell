@@ -11,11 +11,23 @@ import {
   AlertCircle
 } from 'lucide-react'
 import { mockUser, getDotReadinessStatus } from '../data/mockData'
+import { useOnboarding } from '../context/OnboardingContext'
 
 const Profile = () => {
+  const { data: ob, updateData } = useOnboarding()
+
   const [isEditing, setIsEditing] = useState(false)
-  const [metrics, setMetrics] = useState(mockUser.metrics)
-  const [dotPhysicalDate, setDotPhysicalDate] = useState(mockUser.dotPhysicalDate)
+  const [metrics, setMetrics] = useState({
+    ...mockUser.metrics,
+    weight: ob.weight         ? Number(ob.weight)     : mockUser.metrics.weight,
+    bloodPressure: {
+      systolic:  ob.systolic  ? Number(ob.systolic)   : mockUser.metrics.bloodPressure.systolic,
+      diastolic: ob.diastolic ? Number(ob.diastolic)  : mockUser.metrics.bloodPressure.diastolic,
+    },
+  })
+  const [dotPhysicalDate, setDotPhysicalDate] = useState(
+    ob.dotPhysicalDate || mockUser.dotPhysicalDate
+  )
   
   const dotStatus = getDotReadinessStatus(metrics)
   
@@ -26,8 +38,12 @@ const Profile = () => {
 
   const handleSave = () => {
     setIsEditing(false)
-    // TODO: Save to backend/local storage
-    console.log('Saving metrics:', metrics, 'DOT date:', dotPhysicalDate)
+    updateData({
+      weight:         String(metrics.weight),
+      systolic:       String(metrics.bloodPressure.systolic),
+      diastolic:      String(metrics.bloodPressure.diastolic),
+      dotPhysicalDate,
+    })
   }
 
   const updateMetric = (field, value) => {
@@ -305,12 +321,12 @@ const Profile = () => {
         
         <div className="metric-item">
           <span style={{ color: '#6b7280' }}>Name</span>
-          <span style={{ fontWeight: '500' }}>{mockUser.name}</span>
+          <span style={{ fontWeight: '500' }}>{ob.name || mockUser.name}</span>
         </div>
         
         <div className="metric-item">
           <span style={{ color: '#6b7280' }}>CDL Number</span>
-          <span style={{ fontWeight: '500' }}>{mockUser.cdlNumber}</span>
+          <span style={{ fontWeight: '500' }}>{ob.cdlNumber || mockUser.cdlNumber}</span>
         </div>
         
         <div className="metric-item">

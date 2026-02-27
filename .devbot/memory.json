@@ -5,6 +5,6 @@
     "onboarding.css",
     "onboardingFlow.ts"
   ],
-  "conventions": "Mobile-first responsive design approach for multiple device breakpoints. Responsive navigation implementation required. Onboarding flow component structure with step-based progression. Address vertical spacing and alignment issues on first onboarding page to eliminate deadspace. Optimize 'Get Started' button positioning. Implement data persistence from onboarding to main app transition.",
-  "updatedAt": "2026-02-27T17:16:45.549Z"
+  "conventions": "Mobile-first responsive design approach for multiple device breakpoints. Responsive navigation implementation required. Onboarding flow component structure with step-based progression. Address vertical spacing and alignment issues on first onboarding page to eliminate deadspace. Optimize 'Get Started' button positioning. Implement data persistence from onboarding to main app transition. Onboarding data (name, CDL number, current metrics) should transition and update dynamically across dashboard and app components.",
+  "updatedAt": "2026-02-27T18:48:25.381Z"
 }
