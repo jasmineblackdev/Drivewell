@@ -9,14 +9,30 @@ import {
   Target
 } from 'lucide-react'
 import { mockUser, getDotReadinessStatus, mockWorkouts } from '../data/mockData'
+import { useOnboarding } from '../context/OnboardingContext'
 
 const Dashboard = () => {
-  const dotStatus = getDotReadinessStatus(mockUser.metrics)
-  const nextWorkout = mockWorkouts[0] // Quick workout suggestion
-  
-  // Calculate days until DOT physical
+  const { data: ob } = useOnboarding()
+
+  // Prefer onboarding data, fall back to mock defaults
+  const name           = ob.name           || mockUser.name
+  const cdlNumber      = ob.cdlNumber      || mockUser.cdlNumber
+  const dotPhysicalDate = ob.dotPhysicalDate || mockUser.dotPhysicalDate
+  const weight         = ob.weight         || mockUser.metrics.weight
+  const systolic       = ob.systolic       || mockUser.metrics.bloodPressure.systolic
+  const diastolic      = ob.diastolic      || mockUser.metrics.bloodPressure.diastolic
+
+  const metrics = {
+    ...mockUser.metrics,
+    weight,
+    bloodPressure: { systolic: Number(systolic), diastolic: Number(diastolic) },
+  }
+
+  const dotStatus   = getDotReadinessStatus(metrics)
+  const nextWorkout = mockWorkouts[0]
+
   const daysUntilDot = Math.ceil(
-    (new Date(mockUser.dotPhysicalDate) - new Date()) / (1000 * 60 * 60 * 24)
+    (new Date(dotPhysicalDate) - new Date()) / (1000 * 60 * 60 * 24)
   )
 
   return (

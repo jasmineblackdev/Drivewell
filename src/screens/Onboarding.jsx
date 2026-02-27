@@ -25,8 +25,8 @@ const GOALS = [
 
 /* ── individual steps ─────────────────────────────────────── */
 
-const StepWelcome = () => (
-  <div className="ob-step">
+const StepWelcome = ({ onNext }) => (
+  <div className="ob-step" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
     <div className="ob-hero">
       <div className="ob-hero-icon">
         <Truck size={48} color="white" />
@@ -51,6 +51,13 @@ const StepWelcome = () => (
           <span>{text}</span>
         </div>
       ))}
+    </div>
+
+    {/* CTA anchored at the bottom of the content area */}
+    <div className="ob-welcome-cta" style={{ marginTop: 'auto' }}>
+      <button className="ob-btn-next ob-btn-next--full" onClick={onNext}>
+        Get Started <ChevronRight size={20} />
+      </button>
     </div>
   </div>
 )
@@ -245,29 +252,29 @@ const Onboarding = () => {
       )}
 
       {/* Step content */}
-      <div className="ob-content">
-        <StepComponent data={data} update={updateData} />
+      <div className={`ob-content${isFirst ? ' ob-content--welcome' : ''}`}>
+        <StepComponent data={data} update={updateData} onNext={next} />
       </div>
 
-      {/* Navigation */}
-      <div className="ob-nav">
-        {!isFirst && (
+      {/* Navigation — hidden on welcome step (CTA lives inside content) */}
+      {!isFirst && (
+        <div className="ob-nav">
           <button className="ob-btn-back" onClick={back}>
             <ChevronLeft size={18} /> Back
           </button>
-        )}
 
-        <div style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
-          {canSkip && (
-            <button className="ob-btn-skip" onClick={next}>
-              Skip
+          <div style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
+            {canSkip && (
+              <button className="ob-btn-skip" onClick={next}>
+                Skip
+              </button>
+            )}
+            <button className="ob-btn-next" onClick={next}>
+              {nextLabel()} {!isLast && <ChevronRight size={18} />}
             </button>
-          )}
-          <button className="ob-btn-next" onClick={next}>
-            {nextLabel()} {!isLast && <ChevronRight size={18} />}
-          </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
