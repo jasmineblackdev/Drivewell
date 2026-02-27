@@ -1,4 +1,6 @@
-/* ─── Reset ──────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Reset
+───────────────────────────────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -11,55 +13,216 @@ body {
   color: #333;
 }
 
-/* ─── Layout shell ───────────────────────────────────────────── */
-
-/* Mobile-first: single centered column */
+/* ─────────────────────────────────────────────────────────────
+   App shell
+───────────────────────────────────────────────────────────── */
 .app-container {
+  display: flex;
+  flex-direction: column;       /* stack: main | bottom-nav on mobile */
+  min-height: 100vh;
+  background: white;
   max-width: 480px;
   margin: 0 auto;
-  background: white;
-  min-height: 100vh;
   position: relative;
 }
 
-/* iPad (≥ 640px): widen container */
+/* iPad (≥ 640px) */
 @media (min-width: 640px) {
   .app-container {
     max-width: 768px;
   }
 }
 
-/* Desktop (≥ 1024px): full-width shell with sidebar */
+/* Desktop (≥ 1024px) — switch to horizontal sidebar layout */
 @media (min-width: 1024px) {
   body {
     background-color: #f0f2f5;
   }
 
   .app-container {
+    flex-direction: row;        /* sidebar | main side-by-side */
     max-width: 100%;
-    display: flex;
-    flex-direction: row;
     min-height: 100vh;
     background: transparent;
   }
+}
 
-  /* The sidebar nav lives inside .app-container on desktop */
-  .sidebar-nav {
-    display: flex !important; /* unhide */
-  }
+/* ─────────────────────────────────────────────────────────────
+   Main content area
+───────────────────────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  min-width: 0;                 /* prevent grid blowout */
+  overflow-y: auto;
+}
 
-  .bottom-nav {
-    display: none !important; /* hide bottom nav */
-  }
-
-  main {
-    flex: 1;
-    overflow-y: auto;
+@media (min-width: 1024px) {
+  .main-content {
     background: #f0f2f5;
   }
 }
 
-/* ─── DOT Status Colors ──────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Bottom Navigation  (mobile + iPad)
+───────────────────────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 200;
+}
+
+/* iPad: stretch to match wider container */
+@media (min-width: 640px) {
+  .bottom-nav {
+    max-width: 768px;
+  }
+}
+
+/* Desktop: hide bottom nav entirely */
+@media (min-width: 1024px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  padding: 8px 12px;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.bottom-nav-item.active {
+  color: #2563eb;
+}
+
+.bottom-nav-item:hover {
+  color: #2563eb;
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* iPad: slightly bigger touch targets + labels */
+@media (min-width: 640px) {
+  .bottom-nav-item {
+    padding: 8px 16px;
+  }
+
+  .bottom-nav-label {
+    font-size: 12px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Sidebar Navigation  (desktop only)
+───────────────────────────────────────────────────────────── */
+.sidebar-nav {
+  display: none;                /* hidden on mobile + iPad */
+}
+
+@media (min-width: 1024px) {
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    min-width: 240px;
+    min-height: 100vh;
+    background: white;
+    border-right: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    overflow-y: auto;
+  }
+}
+
+/* Brand / logo area */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sidebar-brand-icon {
+  color: #2563eb;
+}
+
+.sidebar-brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.3px;
+}
+
+/* Nav links */
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  flex: 1;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-link:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.sidebar-link.active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.sidebar-link-label {
+  font-size: 15px;
+}
+
+/* Footer */
+.sidebar-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.sidebar-footer-text {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DOT Status Colors
+───────────────────────────────────────────────────────────── */
 .status-green  { color: #22c55e; }
 .status-yellow { color: #eab308; }
 .status-red    { color: #ef4444; }
@@ -68,39 +231,59 @@ body {
 .bg-status-yellow { background-color: #eab308; }
 .bg-status-red    { background-color: #ef4444; }
 
-/* ─── Screen wrapper ─────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Screen wrapper
+───────────────────────────────────────────────────────────── */
 .screen {
   padding: 20px;
-  padding-bottom: 100px; /* bottom nav clearance */
+  padding-bottom: 100px;        /* clearance for fixed bottom nav */
 }
 
 /* iPad */
 @media (min-width: 640px) {
   .screen {
     padding: 28px 32px;
-    padding-bottom: 80px;
-    max-width: 768px;
-    margin: 0 auto;
+    padding-bottom: 96px;
   }
 }
 
 /* Desktop */
 @media (min-width: 1024px) {
   .screen {
-    padding: 36px 48px;
-    padding-bottom: 48px;
-    max-width: 900px;
-    margin: 0 auto;
+    padding: 40px 48px;
+    padding-bottom: 48px;       /* no bottom nav — remove extra gap */
+    max-width: 860px;
   }
 }
 
-/* ─── Card ───────────────────────────────────────────────────── */
+/* Header typography */
+.screen header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+@media (min-width: 640px) {
+  .screen header h1 {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .screen header h1 {
+    font-size: 36px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Card
+───────────────────────────────────────────────────────────── */
 .card {
   background: white;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 @media (min-width: 640px) {
@@ -110,7 +293,9 @@ body {
   }
 }
 
-/* ─── Buttons ────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Buttons
+───────────────────────────────────────────────────────────── */
 .btn-primary {
   background: #2563eb;
   color: white;
@@ -143,7 +328,9 @@ body {
   background: #e5e7eb;
 }
 
-/* ─── Metric row ─────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Metric row
+───────────────────────────────────────────────────────────── */
 .metric-item {
   display: flex;
   justify-content: space-between;
@@ -156,30 +343,18 @@ body {
   border-bottom: none;
 }
 
-/* ─── Responsive grid helpers ────────────────────────────────── */
-
-/* 2-col card grid on iPad+ */
+/* ─────────────────────────────────────────────────────────────
+   Responsive grid helpers
+───────────────────────────────────────────────────────────── */
 .card-grid-2 {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
+  margin-bottom: 16px;
 }
 
 @media (min-width: 640px) {
   .card-grid-2 {
     grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* Page header typography */
-@media (min-width: 640px) {
-  .screen header h1 {
-    font-size: 32px !important;
-  }
-}
-
-@media (min-width: 1024px) {
-  .screen header h1 {
-    font-size: 36px !important;
   }
 }
