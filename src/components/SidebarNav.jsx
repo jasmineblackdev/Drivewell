@@ -1,20 +1,40 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { 
-  Home, 
-  Dumbbell, 
-  MapPin, 
-  User, 
+import {
+  Home,
+  Dumbbell,
+  MapPin,
+  User,
   Settings,
-  Truck
+  TrendingUp,
+  Truck,
+  ClipboardCheck,
+  Trophy,
+  Watch,
+  Brain,
+  HeartPulse,
+  Utensils,
+  Moon,
+  Users,
+  Zap,
 } from 'lucide-react'
 
 const navItems = [
-  { path: '/', icon: Home, label: 'Dashboard' },
-  { path: '/workouts', icon: Dumbbell, label: 'Workouts' },
-  { path: '/locations', icon: MapPin, label: 'Locations' },
-  { path: '/profile', icon: User, label: 'Profile' },
-  { path: '/settings', icon: Settings, label: 'Settings' },
+  { path: '/',               icon: Home,           label: 'Dashboard'      },
+  { path: '/workouts',       icon: Dumbbell,       label: 'Workouts'       },
+  { path: '/checkin',        icon: ClipboardCheck, label: 'Check-In'       },
+  { path: '/nutrition',      icon: Utensils,       label: 'Nutrition'      },
+  { path: '/sleep-health',   icon: Moon,           label: 'Sleep Health'   },
+  { path: '/progress',       icon: TrendingUp,     label: 'Progress'       },
+  { path: '/locations',      icon: MapPin,         label: 'Locations'      },
+  { path: '/trainers',       icon: Users,          label: 'Find a Trainer' },
+  { path: '/mental-wellness',icon: Brain,          label: 'Mental Wellness'},
+  { path: '/telehealth',     icon: HeartPulse,     label: 'Telehealth'     },
+  { path: '/wearables',      icon: Watch,          label: 'Wearables'      },
+  { path: '/achievements',   icon: Trophy,         label: 'Achievements'   },
+  { path: '/profile',        icon: User,           label: 'Profile'        },
+  { path: '/pricing',        icon: Zap,            label: 'Upgrade to Pro' },
+  { path: '/settings',       icon: Settings,       label: 'Settings'       },
 ]
 
 const SidebarNav = () => {

@@ -157,6 +157,17 @@ const StepMetrics = ({ data, update }) => (
         />
       </label>
 
+      <label className="ob-label">
+        Height (inches)
+        <input
+          className="ob-input"
+          type="number"
+          placeholder="70 (5'10&quot;)"
+          value={data.height}
+          onChange={(e) => update({ height: e.target.value })}
+        />
+      </label>
+
       <label className="ob-label">Blood Pressure</label>
       <div className="ob-bp-row">
         <input
@@ -175,6 +186,17 @@ const StepMetrics = ({ data, update }) => (
           onChange={(e) => update({ diastolic: e.target.value })}
         />
       </div>
+
+      <label className="ob-label">
+        Fasting Blood Glucose (mg/dL)
+        <input
+          className="ob-input"
+          type="number"
+          placeholder="105"
+          value={data.bloodGlucose}
+          onChange={(e) => update({ bloodGlucose: e.target.value })}
+        />
+      </label>
 
       <div className="ob-info-box">
         <Activity size={16} color="#2563eb" />

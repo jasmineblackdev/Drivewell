@@ -10,8 +10,10 @@ const defaultData = {
   dotPhysicalDate: '',
   goals: [],
   weight: '',
+  height: '',
   systolic: '',
   diastolic: '',
+  bloodGlucose: '',
 }
 
 const loadData = () => {

@@ -1,19 +1,19 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { 
-  Home, 
-  Dumbbell, 
-  MapPin, 
-  User, 
-  Settings 
+import {
+  Home,
+  Dumbbell,
+  Utensils,
+  Users,
+  User,
 } from 'lucide-react'
 
 const navItems = [
-  { path: '/', icon: Home, label: 'Dashboard' },
-  { path: '/workouts', icon: Dumbbell, label: 'Workouts' },
-  { path: '/locations', icon: MapPin, label: 'Locations' },
-  { path: '/profile', icon: User, label: 'Profile' },
-  { path: '/settings', icon: Settings, label: 'Settings' },
+  { path: '/',          icon: Home,      label: 'Home'      },
+  { path: '/workouts',  icon: Dumbbell,  label: 'Workouts'  },
+  { path: '/nutrition', icon: Utensils,  label: 'Nutrition' },
+  { path: '/trainers',  icon: Users,     label: 'Trainers'  },
+  { path: '/profile',   icon: User,      label: 'Profile'   },
 ]
 
 const BottomNav = () => {

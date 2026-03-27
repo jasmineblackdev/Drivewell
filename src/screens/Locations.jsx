@@ -252,8 +252,11 @@ const LocationCard = ({ location }) => {
             justifyContent: 'center' 
           }}
           onClick={() => {
-            // TODO: Open navigation app with coordinates
-            console.log(`Navigate to: ${location.coordinates.lat}, ${location.coordinates.lng}`)
+            window.open(
+              `https://maps.google.com/?q=${encodeURIComponent(location.address)}`,
+              '_blank',
+              'noopener,noreferrer'
+            )
           }}
         >
           <Navigation size={16} style={{ marginRight: '6px' }} />

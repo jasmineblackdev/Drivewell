@@ -1,25 +1,35 @@
 import React, { useState } from 'react'
-import { 
-  User, 
-  Calendar, 
+import { useNavigate } from 'react-router-dom'
+import {
+  User,
+  Calendar,
   Scale,
   Heart,
   Ruler,
   Activity,
   Edit,
   Save,
-  AlertCircle
+  AlertCircle,
+  Settings,
+  Droplets,
+  ArrowRight,
+  Trophy,
+  Watch,
+  HeartPulse,
 } from 'lucide-react'
-import { mockUser, getDotReadinessStatus } from '../data/mockData'
+import { mockUser, getDotReadinessStatus, calculateBMI, getCheckInStreak } from '../data/mockData'
 import { useOnboarding } from '../context/OnboardingContext'
 
 const Profile = () => {
   const { data: ob, updateData } = useOnboarding()
+  const navigate = useNavigate()
 
   const [isEditing, setIsEditing] = useState(false)
   const [metrics, setMetrics] = useState({
     ...mockUser.metrics,
-    weight: ob.weight         ? Number(ob.weight)     : mockUser.metrics.weight,
+    weight:      ob.weight      ? Number(ob.weight)      : mockUser.metrics.weight,
+    height:      ob.height      ? Number(ob.height)      : mockUser.metrics.height,
+    bloodGlucose: ob.bloodGlucose ? Number(ob.bloodGlucose) : mockUser.metrics.bloodGlucose,
     bloodPressure: {
       systolic:  ob.systolic  ? Number(ob.systolic)   : mockUser.metrics.bloodPressure.systolic,
       diastolic: ob.diastolic ? Number(ob.diastolic)  : mockUser.metrics.bloodPressure.diastolic,
@@ -28,10 +38,10 @@ const Profile = () => {
   const [dotPhysicalDate, setDotPhysicalDate] = useState(
     ob.dotPhysicalDate || mockUser.dotPhysicalDate
   )
-  
-  const dotStatus = getDotReadinessStatus(metrics)
-  
-  // Calculate days until DOT physical
+
+  const dotStatus = getDotReadinessStatus(metrics, getCheckInStreak())
+  const bmi = calculateBMI(metrics.weight, metrics.height)
+
   const daysUntilDot = Math.ceil(
     (new Date(dotPhysicalDate) - new Date()) / (1000 * 60 * 60 * 24)
   )
@@ -39,9 +49,11 @@ const Profile = () => {
   const handleSave = () => {
     setIsEditing(false)
     updateData({
-      weight:         String(metrics.weight),
-      systolic:       String(metrics.bloodPressure.systolic),
-      diastolic:      String(metrics.bloodPressure.diastolic),
+      weight:       String(metrics.weight),
+      height:       String(metrics.height),
+      systolic:     String(metrics.bloodPressure.systolic),
+      diastolic:    String(metrics.bloodPressure.diastolic),
+      bloodGlucose: String(metrics.bloodGlucose),
       dotPhysicalDate,
     })
   }
@@ -57,15 +69,25 @@ const Profile = () => {
     }
   }
 
+  const bmiLabel = bmi
+    ? bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'
+    : null
+
+  const bmiColor = bmi
+    ? bmi < 25 ? '#15803d' : bmi < 30 ? '#a16207' : '#dc2626'
+    : '#2563eb'
+
+  const glucoseColor = metrics.bloodGlucose < 100
+    ? '#15803d' : metrics.bloodGlucose < 126
+    ? '#a16207' : '#dc2626'
+
   return (
     <div className="screen">
       <header style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>
           Health Profile
         </h1>
-        <p style={{ color: '#6b7280' }}>
-          Track your DOT physical readiness
-        </p>
+        <p style={{ color: '#6b7280' }}>Track your DOT physical readiness</p>
       </header>
 
       {/* DOT Status Overview */}
@@ -76,7 +98,7 @@ const Profile = () => {
             DOT Physical Status
           </h2>
         </div>
-        
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div>
             <p className={`status-${dotStatus.status}`} style={{ fontSize: '24px', fontWeight: 'bold' }}>
@@ -103,12 +125,7 @@ const Profile = () => {
                 type="date"
                 value={dotPhysicalDate}
                 onChange={(e) => setDotPhysicalDate(e.target.value)}
-                style={{
-                  padding: '6px 8px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={{ padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '14px' }}
               />
             ) : (
               <span style={{ fontSize: '14px', fontWeight: '500' }}>
@@ -129,9 +146,7 @@ const Profile = () => {
             style={{ display: 'flex', alignItems: 'center' }}
           >
             {isEditing ? <Save size={16} /> : <Edit size={16} />}
-            <span style={{ marginLeft: '6px' }}>
-              {isEditing ? 'Save' : 'Edit'}
-            </span>
+            <span style={{ marginLeft: '6px' }}>{isEditing ? 'Save' : 'Edit'}</span>
           </button>
         </div>
 
@@ -147,28 +162,56 @@ const Profile = () => {
             </div>
             {isEditing ? (
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <input
-                  type="number"
-                  value={metrics.weight}
+                <input type="number" value={metrics.weight}
                   onChange={(e) => updateMetric('weight', e.target.value)}
-                  style={{
-                    width: '80px',
-                    padding: '6px 8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    textAlign: 'center'
-                  }}
-                />
+                  style={{ width: '80px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'center' }} />
                 <span style={{ marginLeft: '6px', color: '#6b7280' }}>lbs</span>
               </div>
             ) : (
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#2563eb' }}>
-                  {metrics.weight}
-                </p>
+                <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#2563eb' }}>{metrics.weight}</p>
                 <p style={{ fontSize: '14px', color: '#6b7280' }}>lbs</p>
               </div>
             )}
+          </div>
+
+          {/* Height */}
+          <div className="metric-item">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Ruler size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+              <div>
+                <p style={{ fontWeight: '500' }}>Height</p>
+                <p style={{ fontSize: '14px', color: '#6b7280' }}>Used to calculate BMI</p>
+              </div>
+            </div>
+            {isEditing ? (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <input type="number" value={metrics.height}
+                  onChange={(e) => updateMetric('height', e.target.value)}
+                  style={{ width: '80px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'center' }} />
+                <span style={{ marginLeft: '6px', color: '#6b7280' }}>in</span>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#2563eb' }}>{metrics.height}</p>
+                <p style={{ fontSize: '14px', color: '#6b7280' }}>inches</p>
+              </div>
+            )}
+          </div>
+
+          {/* BMI (calculated, read-only) */}
+          <div className="metric-item">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Activity size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+              <div>
+                <p style={{ fontWeight: '500' }}>BMI</p>
+                <p style={{ fontSize: '14px', color: '#6b7280' }}>Calculated from weight & height</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '20px', fontWeight: 'bold', color: bmiColor }}>{bmi ?? '—'}</p>
+              {bmiLabel && <p style={{ fontSize: '14px', color: bmiColor }}>{bmiLabel}</p>}
+            </div>
           </div>
 
           {/* Blood Pressure */}
@@ -182,31 +225,13 @@ const Profile = () => {
             </div>
             {isEditing ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <input
-                  type="number"
-                  value={metrics.bloodPressure.systolic}
+                <input type="number" value={metrics.bloodPressure.systolic}
                   onChange={(e) => updateMetric('systolic', e.target.value)}
-                  style={{
-                    width: '60px',
-                    padding: '6px 8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    textAlign: 'center'
-                  }}
-                />
+                  style={{ width: '60px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'center' }} />
                 <span>/</span>
-                <input
-                  type="number"
-                  value={metrics.bloodPressure.diastolic}
+                <input type="number" value={metrics.bloodPressure.diastolic}
                   onChange={(e) => updateMetric('diastolic', e.target.value)}
-                  style={{
-                    width: '60px',
-                    padding: '6px 8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    textAlign: 'center'
-                  }}
-                />
+                  style={{ width: '60px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'center' }} />
                 <span style={{ marginLeft: '4px', color: '#6b7280', fontSize: '12px' }}>mmHg</span>
               </div>
             ) : (
@@ -215,6 +240,32 @@ const Profile = () => {
                   {metrics.bloodPressure.systolic}/{metrics.bloodPressure.diastolic}
                 </p>
                 <p style={{ fontSize: '14px', color: '#6b7280' }}>mmHg</p>
+              </div>
+            )}
+          </div>
+
+          {/* Blood Glucose */}
+          <div className="metric-item">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Droplets size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+              <div>
+                <p style={{ fontWeight: '500' }}>Blood Glucose</p>
+                <p style={{ fontSize: '14px', color: '#6b7280' }}>Fasting (mg/dL)</p>
+              </div>
+            </div>
+            {isEditing ? (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <input type="number" value={metrics.bloodGlucose}
+                  onChange={(e) => updateMetric('bloodGlucose', e.target.value)}
+                  style={{ width: '80px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'center' }} />
+                <span style={{ marginLeft: '6px', color: '#6b7280' }}>mg/dL</span>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '20px', fontWeight: 'bold', color: glucoseColor }}>
+                  {metrics.bloodGlucose}
+                </p>
+                <p style={{ fontSize: '14px', color: '#6b7280' }}>mg/dL</p>
               </div>
             )}
           </div>
@@ -230,61 +281,15 @@ const Profile = () => {
             </div>
             {isEditing ? (
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <input
-                  type="number"
-                  value={metrics.waistMeasurement}
+                <input type="number" value={metrics.waistMeasurement}
                   onChange={(e) => updateMetric('waistMeasurement', e.target.value)}
-                  style={{
-                    width: '80px',
-                    padding: '6px 8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    textAlign: 'center'
-                  }}
-                />
+                  style={{ width: '80px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'center' }} />
                 <span style={{ marginLeft: '6px', color: '#6b7280' }}>in</span>
               </div>
             ) : (
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#2563eb' }}>
-                  {metrics.waistMeasurement}
-                </p>
+                <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#2563eb' }}>{metrics.waistMeasurement}</p>
                 <p style={{ fontSize: '14px', color: '#6b7280' }}>inches</p>
-              </div>
-            )}
-          </div>
-
-          {/* Resting Heart Rate */}
-          <div className="metric-item">
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Activity size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
-              <div>
-                <p style={{ fontWeight: '500' }}>Resting Heart Rate</p>
-                <p style={{ fontSize: '14px', color: '#6b7280' }}>Beats per minute</p>
-              </div>
-            </div>
-            {isEditing ? (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <input
-                  type="number"
-                  value={metrics.restingHeartRate}
-                  onChange={(e) => updateMetric('restingHeartRate', e.target.value)}
-                  style={{
-                    width: '80px',
-                    padding: '6px 8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    textAlign: 'center'
-                  }}
-                />
-                <span style={{ marginLeft: '6px', color: '#6b7280' }}>bpm</span>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#2563eb' }}>
-                  {metrics.restingHeartRate}
-                </p>
-                <p style={{ fontSize: '14px', color: '#6b7280' }}>bpm</p>
               </div>
             )}
           </div>
@@ -301,10 +306,14 @@ const Profile = () => {
                 High Risk for DOT Physical
               </h4>
               <p style={{ fontSize: '14px', color: '#7f1d1d', marginBottom: '12px' }}>
-                Your current metrics indicate you may have difficulty passing your DOT physical. 
+                Your current metrics indicate you may have difficulty passing your DOT physical.
                 Consider speaking with a healthcare provider and increasing your workout frequency.
               </p>
-              <button className="btn-primary" style={{ fontSize: '14px', padding: '8px 16px' }}>
+              <button
+                className="btn-primary"
+                style={{ fontSize: '14px', padding: '8px 16px' }}
+                onClick={() => navigate('/locations')}
+              >
                 Find Nearby DOT Centers
               </button>
             </div>
@@ -318,27 +327,76 @@ const Profile = () => {
           <User size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
           <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Driver Information</h3>
         </div>
-        
+
         <div className="metric-item">
           <span style={{ color: '#6b7280' }}>Name</span>
           <span style={{ fontWeight: '500' }}>{ob.name || mockUser.name}</span>
         </div>
-        
+
         <div className="metric-item">
           <span style={{ color: '#6b7280' }}>CDL Number</span>
           <span style={{ fontWeight: '500' }}>{ob.cdlNumber || mockUser.cdlNumber}</span>
         </div>
-        
+
         <div className="metric-item">
           <span style={{ color: '#6b7280' }}>Subscription</span>
-          <span style={{ 
-            fontWeight: '500',
-            color: mockUser.subscription === 'premium' ? '#059669' : '#6b7280'
-          }}>
+          <span style={{ fontWeight: '500', color: mockUser.subscription === 'premium' ? '#059669' : '#6b7280' }}>
             {mockUser.subscription === 'premium' ? 'Premium' : 'Free'}
           </span>
         </div>
       </div>
+
+      {/* Settings Link */}
+      <button
+        onClick={() => navigate('/settings')}
+        className="card"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Settings size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+          <span style={{ fontWeight: '500' }}>Settings</span>
+        </div>
+        <ArrowRight size={18} style={{ color: '#6b7280' }} />
+      </button>
+
+      {/* Achievements Link */}
+      <button
+        onClick={() => navigate('/achievements')}
+        className="card"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Trophy size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+          <span style={{ fontWeight: '500' }}>Achievements</span>
+        </div>
+        <ArrowRight size={18} style={{ color: '#6b7280' }} />
+      </button>
+
+      {/* Wearables Link */}
+      <button
+        onClick={() => navigate('/wearables')}
+        className="card"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Watch size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+          <span style={{ fontWeight: '500' }}>Connected Devices</span>
+        </div>
+        <ArrowRight size={18} style={{ color: '#6b7280' }} />
+      </button>
+
+      {/* Telehealth Link */}
+      <button
+        onClick={() => navigate('/telehealth')}
+        className="card"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', textAlign: 'left', cursor: 'pointer' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <HeartPulse size={20} style={{ color: '#6b7280', marginRight: '12px' }} />
+          <span style={{ fontWeight: '500' }}>Find a DOT Provider</span>
+        </div>
+        <ArrowRight size={18} style={{ color: '#6b7280' }} />
+      </button>
     </div>
   )
 }
