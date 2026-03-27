@@ -17,28 +17,39 @@ import {
   Moon,
   Users,
   Zap,
+  Bell,
+  Activity,
+  Shield,
+  HelpCircle,
+  LogOut,
 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const navItems = [
-  { path: '/',               icon: Home,           label: 'Dashboard'      },
-  { path: '/workouts',       icon: Dumbbell,       label: 'Workouts'       },
-  { path: '/checkin',        icon: ClipboardCheck, label: 'Check-In'       },
-  { path: '/nutrition',      icon: Utensils,       label: 'Nutrition'      },
-  { path: '/sleep-health',   icon: Moon,           label: 'Sleep Health'   },
-  { path: '/progress',       icon: TrendingUp,     label: 'Progress'       },
-  { path: '/locations',      icon: MapPin,         label: 'Locations'      },
-  { path: '/trainers',       icon: Users,          label: 'Find a Trainer' },
-  { path: '/mental-wellness',icon: Brain,          label: 'Mental Wellness'},
-  { path: '/telehealth',     icon: HeartPulse,     label: 'Telehealth'     },
-  { path: '/wearables',      icon: Watch,          label: 'Wearables'      },
-  { path: '/achievements',   icon: Trophy,         label: 'Achievements'   },
-  { path: '/profile',        icon: User,           label: 'Profile'        },
-  { path: '/pricing',        icon: Zap,            label: 'Upgrade to Pro' },
-  { path: '/settings',       icon: Settings,       label: 'Settings'       },
+  { path: '/',               icon: Home,           label: 'Dashboard'       },
+  { path: '/workouts',       icon: Dumbbell,       label: 'Workouts'        },
+  { path: '/checkin',        icon: ClipboardCheck, label: 'Check-In'        },
+  { path: '/nutrition',      icon: Utensils,       label: 'Nutrition'       },
+  { path: '/sleep-health',   icon: Moon,           label: 'Sleep Health'    },
+  { path: '/health-history', icon: Activity,       label: 'Health History'  },
+  { path: '/progress',       icon: TrendingUp,     label: 'Progress'        },
+  { path: '/dot-reminders',  icon: Bell,           label: 'DOT Reminders'   },
+  { path: '/locations',      icon: MapPin,         label: 'Locations'       },
+  { path: '/trainers',       icon: Users,          label: 'Find a Trainer'  },
+  { path: '/mental-wellness',icon: Brain,          label: 'Mental Wellness' },
+  { path: '/telehealth',     icon: HeartPulse,     label: 'Telehealth'      },
+  { path: '/wearables',      icon: Watch,          label: 'Wearables'       },
+  { path: '/achievements',   icon: Trophy,         label: 'Achievements'    },
+  { path: '/profile',        icon: User,           label: 'Profile'         },
+  { path: '/pricing',        icon: Zap,            label: 'Upgrade to Pro'  },
+  { path: '/privacy',        icon: Shield,         label: 'Privacy & Data'  },
+  { path: '/help',           icon: HelpCircle,     label: 'Help & Support'  },
+  { path: '/settings',       icon: Settings,       label: 'Settings'        },
 ]
 
 const SidebarNav = () => {
   const location = useLocation()
+  const { logout, user } = useAuth()
 
   return (
     <aside className="sidebar-nav">
@@ -64,7 +75,17 @@ const SidebarNav = () => {
 
       {/* Footer */}
       <div className="sidebar-footer">
-        <p className="sidebar-footer-text">DriveWell v1.0</p>
+        {user && (
+          <p className="sidebar-footer-text" style={{ marginBottom: '8px' }}>
+            {user.firstName} {user.lastName}
+          </p>
+        )}
+        <button
+          onClick={logout}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '13px', padding: '4px 0' }}
+        >
+          <LogOut size={15} /> Sign Out
+        </button>
       </div>
     </aside>
   )

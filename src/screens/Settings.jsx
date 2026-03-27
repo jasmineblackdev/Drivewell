@@ -61,7 +61,7 @@ const Settings = () => {
               cursor: 'pointer'
             }}
           >
-            Upgrade Now - $9.99/month
+            Upgrade Now — $14.99/month
           </button>
         </div>
       )}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Dashboard from './screens/Dashboard'
@@ -18,11 +18,26 @@ import SleepHealth from './screens/SleepHealth'
 import TrainerMarketplace from './screens/TrainerMarketplace'
 import Pricing from './screens/Pricing'
 import Onboarding from './screens/Onboarding'
+import Login from './screens/Login'
+import Register from './screens/Register'
+import HealthHistory from './screens/HealthHistory'
+import DOTReminders from './screens/DOTReminders'
+import PrivacyData from './screens/PrivacyData'
+import HelpSupport from './screens/HelpSupport'
 import { OnboardingProvider, useOnboarding } from './context/OnboardingContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import './App.css'
 
 const AppRoutes = () => {
+  const { isAuthenticated } = useAuth()
   const { completed } = useOnboarding()
+  const [showRegister, setShowRegister] = useState(false)
+
+  if (!isAuthenticated) {
+    return showRegister
+      ? <Register onSwitch={() => setShowRegister(false)} />
+      : <Login onSwitch={() => setShowRegister(true)} />
+  }
 
   if (!completed) return <Onboarding />
 
@@ -45,6 +60,10 @@ const AppRoutes = () => {
         <Route path="/sleep-health"       element={<SleepHealth />} />
         <Route path="/trainers"           element={<TrainerMarketplace />} />
         <Route path="/pricing"            element={<Pricing />} />
+        <Route path="/health-history"     element={<HealthHistory />} />
+        <Route path="/dot-reminders"      element={<DOTReminders />} />
+        <Route path="/privacy"            element={<PrivacyData />} />
+        <Route path="/help"               element={<HelpSupport />} />
       </Routes>
     </Layout>
   )
@@ -52,11 +71,13 @@ const AppRoutes = () => {
 
 function App() {
   return (
-    <OnboardingProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </OnboardingProvider>
+    <AuthProvider>
+      <OnboardingProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </OnboardingProvider>
+    </AuthProvider>
   )
 }
 

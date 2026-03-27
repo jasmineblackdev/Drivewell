@@ -47,8 +47,8 @@ const FeatureRow = ({ text, included = true }) => (
 const Pricing = () => {
   const [billing, setBilling] = useState('monthly') // 'monthly' | 'annual'
 
-  const proMonthly = 9.99
-  const proAnnual  = 6.58   // $79/yr ÷ 12
+  const proMonthly = 14.99
+  const proAnnual  = 9.99   // $119.99/yr ÷ 12
   const proPrice   = billing === 'annual' ? proAnnual : proMonthly
 
   return (
@@ -118,7 +118,7 @@ const Pricing = () => {
             <p style={{ fontSize: '28px', fontWeight: '700', color: '#2563eb' }}>${proPrice.toFixed(2)}</p>
             <p style={{ fontSize: '12px', color: '#9ca3af' }}>/ month</p>
             {billing === 'annual' && (
-              <p style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>$79 billed annually</p>
+              <p style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>$119.99/year — save 33%</p>
             )}
           </div>
         </div>
@@ -138,7 +138,7 @@ const Pricing = () => {
           For fleet companies. Includes Pro access for every enrolled driver + the full fleet management dashboard.
         </p>
         <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '10px', padding: '14px', marginBottom: '16px' }}>
-          <p style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px' }}>Starting at $10/driver/month</p>
+          <p style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px' }}>Starting at $25/driver/month</p>
           {FLEET_FEATURES.slice(0, 5).map(f => (
             <div key={f} style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
               <CheckCircle2 size={14} color="#86efac" style={{ flexShrink: 0, marginTop: '1px' }} />
