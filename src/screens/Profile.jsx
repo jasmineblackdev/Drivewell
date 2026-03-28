@@ -18,11 +18,14 @@ import {
   HeartPulse,
 } from 'lucide-react'
 import { mockUser, getDotReadinessStatus, calculateBMI, getCheckInStreak } from '../data/mockData'
+import { useAuth } from '../context/AuthContext'
 import { useOnboarding } from '../context/OnboardingContext'
 
 const Profile = () => {
   const { data: ob, updateData } = useOnboarding()
+  const { user: authUser } = useAuth()
   const navigate = useNavigate()
+  const isPro = authUser?.subscriptionTier === 'driver_pro'
 
   const [isEditing, setIsEditing] = useState(false)
   const [metrics, setMetrics] = useState({
@@ -340,8 +343,8 @@ const Profile = () => {
 
         <div className="metric-item">
           <span style={{ color: '#6b7280' }}>Subscription</span>
-          <span style={{ fontWeight: '500', color: mockUser.subscription === 'premium' ? '#059669' : '#6b7280' }}>
-            {mockUser.subscription === 'premium' ? 'Premium' : 'Free'}
+          <span style={{ fontWeight: '500', color: isPro ? '#059669' : '#6b7280' }}>
+            {isPro ? 'Driver Pro' : 'Free'}
           </span>
         </div>
       </div>

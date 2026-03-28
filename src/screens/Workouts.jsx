@@ -9,7 +9,8 @@ import {
   Star,
   X
 } from 'lucide-react'
-import { mockWorkouts, getWorkoutFilters, mockUser } from '../data/mockData'
+import { mockWorkouts, getWorkoutFilters } from '../data/mockData'
+import { useAuth } from '../context/AuthContext'
 
 const FilterChip = ({ label, active, onClick }) => (
   <button
@@ -30,6 +31,9 @@ const FilterChip = ({ label, active, onClick }) => (
 )
 
 const Workouts = () => {
+  const { user } = useAuth()
+  const isPro = user?.subscriptionTier === 'driver_pro'
+
   const [selectedFilters, setSelectedFilters] = useState({
     duration: null,
     space: null,
@@ -53,13 +57,8 @@ const Workouts = () => {
     return true
   })
 
-  const availableWorkouts = mockUser.subscription === 'free'
-    ? filteredWorkouts.slice(0, 2)
-    : filteredWorkouts
-
-  const lockedWorkouts = mockUser.subscription === 'free'
-    ? filteredWorkouts.slice(2)
-    : []
+  const availableWorkouts = isPro ? filteredWorkouts : filteredWorkouts.slice(0, 2)
+  const lockedWorkouts    = isPro ? [] : filteredWorkouts.slice(2)
 
   const activeFilterCount = Object.values(selectedFilters).filter(Boolean).length
 

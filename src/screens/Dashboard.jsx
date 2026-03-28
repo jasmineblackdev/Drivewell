@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { mockUser, getDotReadinessStatus, mockWorkouts, calculateBMI, loadCheckIns, getCheckInStreak, getTodayStr } from '../data/mockData'
 import { useOnboarding } from '../context/OnboardingContext'
+import { useAuth } from '../context/AuthContext'
 
 const DOT_MILESTONES = [90, 60, 30, 14, 7]
 
@@ -48,6 +49,8 @@ const ScoreBadge = ({ status, score }) => {
 
 const Dashboard = () => {
   const { data: ob } = useOnboarding()
+  const { user: authUser } = useAuth()
+  const isPro = authUser?.subscriptionTier === 'driver_pro'
 
   const name            = ob.name            || mockUser.name
   const cdlNumber       = ob.cdlNumber       || mockUser.cdlNumber
@@ -78,6 +81,17 @@ const Dashboard = () => {
     (new Date(dotPhysicalDate) - new Date()) / (1000 * 60 * 60 * 24)
   )
 
+  // Getting started checklist — shown until all steps complete
+  const hasHealthRecord   = !!localStorage.getItem('dw_health_records')
+  const hasDotReminder    = !!localStorage.getItem('dw_dot_reminders')
+  const gsSteps = [
+    { done: todayDone,       label: 'Complete your first daily check-in', path: '/checkin'        },
+    { done: hasHealthRecord, label: 'Log a health reading (BP, glucose)',  path: '/health-history' },
+    { done: hasDotReminder,  label: 'Set a DOT physical reminder',        path: '/dot-reminders'  },
+  ]
+  const gsAllDone  = gsSteps.every(s => s.done)
+  const showGS     = checkInStreak === 0 && !gsAllDone
+
   // Milestone badges: show only upcoming ones within 90 days
   const activeMilestones = DOT_MILESTONES.filter(
     (d) => daysUntilDot <= d && daysUntilDot > 0
@@ -97,6 +111,32 @@ const Dashboard = () => {
         </h1>
         <p style={{ color: '#6b7280' }}>CDL: {cdlNumber}</p>
       </header>
+
+      {/* Getting Started Checklist */}
+      {showGS && (
+        <div className="card" style={{ border: '1.5px solid #bfdbfe', background: '#eff6ff', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <CheckCircle2 size={20} color="#2563eb" />
+            <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#1e40af' }}>Getting Started</h3>
+            <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#3b82f6', fontWeight: '600' }}>
+              {gsSteps.filter(s => s.done).length}/{gsSteps.length} done
+            </span>
+          </div>
+          {gsSteps.map((s) => (
+            <Link
+              key={s.label}
+              to={s.path}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', textDecoration: 'none', borderBottom: '1px solid #dbeafe', color: 'inherit' }}
+            >
+              <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${s.done ? '#16a34a' : '#93c5fd'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: s.done ? '#dcfce7' : 'white' }}>
+                {s.done && <CheckCircle2 size={12} color="#16a34a" />}
+              </div>
+              <span style={{ fontSize: '14px', color: s.done ? '#6b7280' : '#1e40af', textDecoration: s.done ? 'line-through' : 'none', flex: 1 }}>{s.label}</span>
+              {!s.done && <span style={{ fontSize: '13px', color: '#2563eb', fontWeight: '600' }}>→</span>}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* DOT Readiness Card */}
       <div className="card">
@@ -267,7 +307,7 @@ const Dashboard = () => {
       </div>
 
       {/* Upgrade Prompt (Free Users) */}
-      {mockUser.subscription === 'free' && (
+      {!isPro && (
         <div className="card" style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)', color: 'white' }}>
           <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
             Upgrade to Premium

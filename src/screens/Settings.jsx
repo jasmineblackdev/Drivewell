@@ -1,5 +1,6 @@
-import React from 'react'
-import { 
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
   Star,
   Bell,
   Shield,
@@ -9,17 +10,34 @@ import {
   Crown,
   Smartphone
 } from 'lucide-react'
-import { mockUser } from '../data/mockData'
+import { useAuth } from '../context/AuthContext'
 
 const Settings = () => {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const isPro = user?.subscriptionTier === 'driver_pro'
+  const [dotReminders, setDotReminders] = useState(() => {
+    return localStorage.getItem('dw_notif_dot') !== 'false'
+  })
+  const [workoutReminders, setWorkoutReminders] = useState(() => {
+    return localStorage.getItem('dw_notif_workout') === 'true'
+  })
+
   const handleUpgrade = () => {
     // TODO: Implement upgrade flow
     console.log('Upgrade to premium')
   }
 
-  const handleNotificationToggle = () => {
-    // TODO: Implement notification settings
-    console.log('Toggle notifications')
+  const toggleDotReminders = () => {
+    const next = !dotReminders
+    setDotReminders(next)
+    localStorage.setItem('dw_notif_dot', String(next))
+  }
+
+  const toggleWorkoutReminders = () => {
+    const next = !workoutReminders
+    setWorkoutReminders(next)
+    localStorage.setItem('dw_notif_workout', String(next))
   }
 
   return (
@@ -34,7 +52,7 @@ const Settings = () => {
       </header>
 
       {/* Premium Upgrade (Free Users Only) */}
-      {mockUser.subscription === 'free' && (
+      {!isPro && (
         <div className="card" style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)', color: 'white', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
             <Crown size={24} style={{ marginRight: '12px' }} />
@@ -66,8 +84,8 @@ const Settings = () => {
         </div>
       )}
 
-      {/* Premium Status (Premium Users) */}
-      {mockUser.subscription === 'premium' && (
+      {/* Premium Status (Pro Users) */}
+      {isPro && (
         <div className="card" style={{ border: '2px solid #059669' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
             <Star size={20} style={{ color: '#059669', marginRight: '8px' }} />
@@ -90,32 +108,16 @@ const Settings = () => {
           title="DOT Physical Reminders"
           description="Get notified before your DOT physical expires"
           action={
-            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                defaultChecked={true}
-                onChange={handleNotificationToggle}
-                style={{ marginRight: '8px' }}
-              />
-              <span style={{ fontSize: '14px' }}>Enabled</span>
-            </label>
+            <Toggle checked={dotReminders} onChange={toggleDotReminders} />
           }
         />
-        
+
         <SettingsItem
           icon={<Smartphone size={20} style={{ color: '#6b7280' }} />}
           title="Workout Reminders"
           description="Daily fitness reminders"
           action={
-            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                defaultChecked={false}
-                onChange={handleNotificationToggle}
-                style={{ marginRight: '8px' }}
-              />
-              <span style={{ fontSize: '14px' }}>Disabled</span>
-            </label>
+            <Toggle checked={workoutReminders} onChange={toggleWorkoutReminders} />
           }
         />
       </div>
@@ -127,24 +129,18 @@ const Settings = () => {
         
         <SettingsItem
           icon={<Shield size={20} style={{ color: '#6b7280' }} />}
-          title="Privacy Policy"
-          description="How we handle your data"
+          title="Privacy & Data"
+          description="How we handle your data, export or delete"
           action={<ChevronRight size={16} style={{ color: '#6b7280' }} />}
-          onClick={() => {
-            // TODO: Open privacy policy
-            console.log('Open privacy policy')
-          }}
+          onClick={() => navigate('/privacy')}
         />
-        
+
         <SettingsItem
           icon={<ExternalLink size={20} style={{ color: '#6b7280' }} />}
           title="Terms of Service"
           description="Our terms and conditions"
           action={<ChevronRight size={16} style={{ color: '#6b7280' }} />}
-          onClick={() => {
-            // TODO: Open terms of service
-            console.log('Open terms of service')
-          }}
+          onClick={() => window.open('https://drivewell.app/terms', '_blank')}
         />
       </div>
 
@@ -156,23 +152,17 @@ const Settings = () => {
         <SettingsItem
           icon={<HelpCircle size={20} style={{ color: '#6b7280' }} />}
           title="Help Center"
-          description="Frequently asked questions"
+          description="FAQs and contact support"
           action={<ChevronRight size={16} style={{ color: '#6b7280' }} />}
-          onClick={() => {
-            // TODO: Open help center
-            console.log('Open help center')
-          }}
+          onClick={() => navigate('/help')}
         />
-        
+
         <SettingsItem
           icon={<ExternalLink size={20} style={{ color: '#6b7280' }} />}
           title="Contact Support"
           description="Get help from our team"
           action={<ChevronRight size={16} style={{ color: '#6b7280' }} />}
-          onClick={() => {
-            // TODO: Open contact support
-            console.log('Contact support')
-          }}
+          onClick={() => navigate('/help')}
         />
       </div>
 
@@ -193,6 +183,25 @@ const Settings = () => {
     </div>
   )
 }
+
+const Toggle = ({ checked, onChange }) => (
+  <div
+    onClick={onChange}
+    style={{
+      width: '44px', height: '24px', borderRadius: '12px', cursor: 'pointer',
+      background: checked ? '#2563eb' : '#d1d5db', position: 'relative',
+      transition: 'background 0.2s', flexShrink: 0,
+    }}
+  >
+    <div style={{
+      position: 'absolute', top: '3px',
+      left: checked ? '23px' : '3px',
+      width: '18px', height: '18px', borderRadius: '50%',
+      background: 'white', transition: 'left 0.2s',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+    }} />
+  </div>
+)
 
 const SettingsItem = ({ icon, title, description, action, onClick }) => {
   return (
