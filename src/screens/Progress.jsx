@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
-import { mockHistory } from '../data/mockData'
+import { TrendingUp, TrendingDown, Minus, Activity } from 'lucide-react'
+import { mockHistory, getReadinessTrend, mockUser } from '../data/mockData'
+import { useOnboarding } from '../context/OnboardingContext'
 
 const TABS = [
   { label: '30 Days', days: 30 },
@@ -119,12 +120,20 @@ const StatRow = ({ label, start, end, unit, lowerIsBetter = false }) => {
 /* ── Main Component ─────────────────────────────────────── */
 const Progress = () => {
   const [activeTab, setActiveTab] = useState(0)
+  const { data: ob } = useOnboarding()
+  const height = Number(ob.height) || mockUser.metrics.height
 
   const windowDays = TABS[activeTab].days
 
   const slicedHistory = useMemo(() => {
     return mockHistory.slice(-windowDays)
   }, [windowDays])
+
+  const readinessTrend = useMemo(() => getReadinessTrend(windowDays, height), [windowDays, height])
+
+  const firstScore = readinessTrend[0]?.score ?? 0
+  const lastScore  = readinessTrend[readinessTrend.length - 1]?.score ?? 0
+  const scoreDelta = lastScore - firstScore
 
   const weeklyWorkouts = useMemo(() => {
     const weeks = Math.ceil(slicedHistory.length / 7)
@@ -167,6 +176,36 @@ const Progress = () => {
             {tab.label}
           </button>
         ))}
+      </div>
+
+      {/* Readiness Score Trend */}
+      <div className="card" style={{ marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Activity size={18} color="#2563eb" />
+            <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Readiness Score Trend</h3>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '22px', fontWeight: '800', color: lastScore >= 90 ? '#15803d' : lastScore >= 70 ? '#a16207' : '#dc2626' }}>{lastScore}</span>
+            <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '4px' }}>/ 100</span>
+          </div>
+        </div>
+        <LineChart
+          data={readinessTrend}
+          lines={[{ key: 'score', color: lastScore >= 90 ? '#22c55e' : lastScore >= 70 ? '#eab308' : '#ef4444' }]}
+          height={120}
+          yMin={0}
+          yMax={100}
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+          <p style={{ fontSize: '12px', color: '#6b7280' }}>Based on health metrics + daily habits</p>
+          <span style={{
+            fontSize: '13px', fontWeight: '600',
+            color: scoreDelta >= 0 ? '#15803d' : '#dc2626',
+          }}>
+            {scoreDelta >= 0 ? '+' : ''}{scoreDelta} pts
+          </span>
+        </div>
       </div>
 
       {/* Summary stats */}

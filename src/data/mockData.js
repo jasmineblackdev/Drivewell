@@ -304,6 +304,20 @@ export const saveWorkoutLog = (log) => {
 
 // ── FMCSA-weighted DOT Score ──────────────────────────────────────
 
+// Average sleep quality (1–5) from recent check-ins
+export const getAvgSleep = (days = 7) => {
+  const checkIns = loadCheckIns()
+  const scores = []
+  for (let i = 0; i < days; i++) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    const key = d.toISOString().split('T')[0]
+    if (checkIns[key]?.sleep != null) scores.push(checkIns[key].sleep)
+  }
+  if (!scores.length) return null
+  return scores.reduce((a, b) => a + b, 0) / scores.length
+}
+
 export const getDetailedDotScore = (metrics, checkInStreakDays = 0) => {
   const { weight, height, bloodPressure, restingHeartRate, bloodGlucose } = metrics
   const { systolic, diastolic } = bloodPressure
@@ -338,24 +352,71 @@ export const getDetailedDotScore = (metrics, checkInStreakDays = 0) => {
   if (glucose < 100) glucosePts = 20
   else if (glucose < 126) glucosePts = 10
 
-  // Check-in streak: 15 pts
+  // Habits + Sleep: 15 pts (8 streak + 7 sleep quality)
   let streakPts = 0
-  if (checkInStreakDays >= 7) streakPts = 15
-  else if (checkInStreakDays >= 3) streakPts = 8
+  if (checkInStreakDays >= 7) streakPts = 8
+  else if (checkInStreakDays >= 3) streakPts = 4
 
-  const score = bpPts + bmiPts + hrPts + glucosePts + streakPts
+  const avgSleep = getAvgSleep(7)
+  let sleepPts = 0
+  if (avgSleep === null)   sleepPts = 3   // no data — neutral baseline
+  else if (avgSleep >= 4)  sleepPts = 7
+  else if (avgSleep >= 3)  sleepPts = 4
+  else if (avgSleep >= 2)  sleepPts = 2
+
+  const habitsPts = streakPts + sleepPts
+
+  const score = bpPts + bmiPts + hrPts + glucosePts + habitsPts
 
   let status, message
   if (score >= 90) { status = 'green';  message = 'DOT Ready' }
   else if (score >= 70) { status = 'yellow'; message = 'At Risk' }
   else { status = 'red'; message = 'High Risk' }
 
-  return { score, status, message }
+  const breakdown = {
+    bp:      { pts: bpPts,      max: 30, label: 'Blood Pressure' },
+    bmi:     { pts: bmiPts,     max: 20, label: 'BMI' },
+    hr:      { pts: hrPts,      max: 15, label: 'Heart Rate' },
+    glucose: { pts: glucosePts, max: 20, label: 'Blood Glucose' },
+    habits:  { pts: habitsPts,  max: 15, label: 'Habits & Sleep' },
+  }
+
+  return { score, status, message, breakdown }
 }
 
 // Backward-compatible wrapper
 export const getDotReadinessStatus = (metrics, checkInStreakDays = 0) => {
   return getDetailedDotScore(metrics, checkInStreakDays)
+}
+
+// Suggested action for today based on score breakdown
+export const getTodayAction = (breakdown) => {
+  if (!breakdown) return { label: '5-Min In-Cab Stretch', path: '/workouts/1', icon: '🧘', reason: 'Stay mobile and reduce stiffness' }
+  const gaps = Object.entries(breakdown)
+    .map(([key, { pts, max, label }]) => ({ key, label, gap: max - pts }))
+    .sort((a, b) => b.gap - a.gap)
+  const worst = gaps[0]
+  if (worst.gap === 0) return { label: '5-Min In-Cab Stretch', path: '/workouts/1', icon: '🧘', reason: "You're on track — keep it up!" }
+  const actions = {
+    bp:      { label: 'Blood Pressure Routine',  path: '/workouts/3',  icon: '❤️',  reason: 'BP is your biggest DOT risk right now' },
+    bmi:     { label: 'Parking Lot Cardio Blast', path: '/workouts/2', icon: '🔥',  reason: 'Cardio helps your weight and DOT score' },
+    glucose: { label: 'Glucose-Busting Walk',     path: '/workouts/10', icon: '🚶', reason: 'A brisk walk after meals lowers glucose' },
+    habits:  { label: 'Complete Daily Check-In',  path: '/checkin',    icon: '📋',  reason: 'Consistency habit is worth 15 pts on your score' },
+    hr:      { label: 'In-Cab Core Activation',   path: '/workouts/5', icon: '💪',  reason: 'Core work improves cardiovascular efficiency' },
+  }
+  return actions[worst.key] || actions.habits
+}
+
+// Readiness score trend using mock history health data
+export const getReadinessTrend = (days = 30, heightInches = 70) => {
+  return mockHistory.slice(-days).map(d => {
+    const bmi      = (d.weight / (heightInches * heightInches)) * 703
+    const bpPts    = d.diastolic >= 100 ? 0 : d.systolic < 140 ? 30 : d.systolic <= 159 ? 15 : 0
+    const bmiPts   = bmi < 30 ? 20 : bmi < 35 ? 10 : 0
+    const glucPts  = d.bloodGlucose < 100 ? 20 : d.bloodGlucose < 126 ? 10 : 0
+    const habitPts = d.checkInDone ? 11 : 4   // simulated streak + sleep contribution
+    return { date: d.date, score: Math.min(bpPts + bmiPts + 15 + glucPts + habitPts, 100) }
+  })
 }
 
 export const calculateBMI = (weightLbs, heightInches) => {

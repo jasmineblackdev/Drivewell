@@ -24,6 +24,7 @@ import HealthHistory from './screens/HealthHistory'
 import DOTReminders from './screens/DOTReminders'
 import PrivacyData from './screens/PrivacyData'
 import HelpSupport from './screens/HelpSupport'
+import DOTExamPrep from './screens/DOTExamPrep'
 import { OnboardingProvider, useOnboarding } from './context/OnboardingContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './App.css'
@@ -64,6 +65,7 @@ const AppRoutes = () => {
         <Route path="/dot-reminders"      element={<DOTReminders />} />
         <Route path="/privacy"            element={<PrivacyData />} />
         <Route path="/help"               element={<HelpSupport />} />
+        <Route path="/dot-prep"           element={<DOTExamPrep />} />
       </Routes>
     </Layout>
   )
