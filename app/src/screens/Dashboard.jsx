@@ -217,9 +217,14 @@ const Dashboard = () => {
           </div>
         )}
 
-        <Link to="/progress" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '12px', fontSize: '13px', color: sc.text, textDecoration: 'none', fontWeight: '600' }}>
-          View full trend <ChevronRight size={14} />
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+          <p style={{ fontSize: '10px', color: sc.text, opacity: 0.6 }}>
+            Per FMCSA 49 CFR §391.41
+          </p>
+          <Link to="/progress" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: sc.text, textDecoration: 'none', fontWeight: '600' }}>
+            View full trend <ChevronRight size={14} />
+          </Link>
+        </div>
       </div>
 
       {/* ── Today's Recommended Action ──────────────────────── */}
