@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Star, MapPin, Video, CheckCircle2, X, Dumbbell, Users } from 'lucide-react'
+import { Star, MapPin, Video, CheckCircle2, X, Users } from 'lucide-react'
 
 const TRAINERS = [
   {
@@ -208,21 +208,6 @@ const TrainerMarketplace = () => {
           </div>
         </div>
       ))}
-
-      {/* Are you a trainer? CTA */}
-      <div className="card" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: 'white', textAlign: 'center' }}>
-        <Dumbbell size={28} color="white" style={{ margin: '0 auto 10px' }} />
-        <h3 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '6px' }}>Are You a Personal Trainer?</h3>
-        <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '14px' }}>
-          Reach 50,000+ CDL drivers looking for coaching. List your services on DriveWell for $49/month.
-        </p>
-        <button style={{
-          background: 'white', color: '#ea580c', border: 'none',
-          padding: '10px 24px', borderRadius: '8px', fontWeight: '700', fontSize: '14px', cursor: 'pointer',
-        }}>
-          Apply as a Trainer →
-        </button>
-      </div>
 
       {/* Trainer detail modal */}
       {selected && (
