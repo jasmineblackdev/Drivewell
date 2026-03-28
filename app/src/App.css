@@ -14,11 +14,12 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   App shell
+   App shell — always renders as a mobile phone UI
+   Max 480px centered; on desktop it floats on a neutral bg
 ───────────────────────────────────────────────────────────── */
 .app-container {
   display: flex;
-  flex-direction: column;       /* stack: main | bottom-nav on mobile */
+  flex-direction: column;
   min-height: 100vh;
   background: white;
   max-width: 480px;
@@ -26,24 +27,16 @@ body {
   position: relative;
 }
 
-/* iPad (≥ 640px) */
-@media (min-width: 640px) {
-  .app-container {
-    max-width: 768px;
-  }
-}
-
-/* Desktop (≥ 1024px) — switch to horizontal sidebar layout */
-@media (min-width: 1024px) {
+/* On larger screens give the page a subtle background so the
+   phone container stands out */
+@media (min-width: 520px) {
   body {
-    background-color: #f0f2f5;
+    background-color: #e8edf2;
   }
 
   .app-container {
-    flex-direction: row;        /* sidebar | main side-by-side */
-    max-width: 100%;
     min-height: 100vh;
-    background: transparent;
+    box-shadow: 0 0 40px rgba(0,0,0,0.12);
   }
 }
 
@@ -52,14 +45,8 @@ body {
 ───────────────────────────────────────────────────────────── */
 .main-content {
   flex: 1;
-  min-width: 0;                 /* prevent grid blowout */
+  min-width: 0;
   overflow-y: auto;
-}
-
-@media (min-width: 1024px) {
-  .main-content {
-    background: #f0f2f5;
-  }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -80,19 +67,7 @@ body {
   z-index: 200;
 }
 
-/* iPad: stretch to match wider container */
-@media (min-width: 640px) {
-  .bottom-nav {
-    max-width: 768px;
-  }
-}
-
-/* Desktop: hide bottom nav entirely */
-@media (min-width: 1024px) {
-  .bottom-nav {
-    display: none;
-  }
-}
+/* Bottom nav always stays at 480px to match the app container */
 
 .bottom-nav-item {
   display: flex;
@@ -130,27 +105,10 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Sidebar Navigation  (desktop only)
+   Sidebar Navigation  — always hidden (mobile-only app)
 ───────────────────────────────────────────────────────────── */
 .sidebar-nav {
-  display: none;                /* hidden on mobile + iPad */
-}
-
-@media (min-width: 1024px) {
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    width: 240px;
-    min-width: 240px;
-    min-height: 100vh;
-    background: white;
-    border-right: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    z-index: 100;
-    overflow-y: auto;
-  }
+  display: none;
 }
 
 /* Brand / logo area */
@@ -247,14 +205,6 @@ body {
   }
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
-  .screen {
-    padding: 40px 48px;
-    padding-bottom: 48px;       /* no bottom nav — remove extra gap */
-    max-width: 860px;
-  }
-}
 
 /* Header typography */
 .screen header h1 {
@@ -269,11 +219,6 @@ body {
   }
 }
 
-@media (min-width: 1024px) {
-  .screen header h1 {
-    font-size: 36px;
-  }
-}
 
 /* ─────────────────────────────────────────────────────────────
    Card
