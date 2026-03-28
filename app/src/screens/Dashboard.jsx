@@ -227,6 +227,32 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* ── Insurance Risk Tier ─────────────────────────────── */}
+      {(() => {
+        const score = dotStatus.score || 0
+        const tier = score >= 70
+          ? { label: 'Preferred Risk',  color: '#15803d', bg: '#f0fdf4', border: '#86efac', desc: 'You qualify for wellness premium discounts with most commercial carriers.', badge: '✓' }
+          : score >= 50
+          ? { label: 'Standard Risk',   color: '#a16207', bg: '#fffbeb', border: '#fde68a', desc: 'Improving your DOT score to 70+ could unlock lower insurance premiums.', badge: '↑' }
+          : { label: 'Elevated Risk',   color: '#dc2626', bg: '#fef2f2', border: '#fca5a5', desc: 'Drivers in this tier see higher premiums. Focus on BP and glucose first.', badge: '!' }
+        return (
+          <div className="card" style={{ border: `1.5px solid ${tier.border}`, background: tier.bg, marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '11px', fontWeight: '700', color: tier.color, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+                  Insurance Risk Profile
+                </p>
+                <p style={{ fontSize: '18px', fontWeight: '800', color: tier.color, marginBottom: '4px' }}>{tier.label}</p>
+                <p style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.5' }}>{tier.desc}</p>
+              </div>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: tier.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: '12px' }}>
+                <span style={{ fontSize: '18px', color: 'white', fontWeight: '800' }}>{tier.badge}</span>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* ── Today's Recommended Action ──────────────────────── */}
       <Link
         to={todayAction.path}

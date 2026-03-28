@@ -206,6 +206,29 @@ const Progress = () => {
             {scoreDelta >= 0 ? '+' : ''}{scoreDelta} pts
           </span>
         </div>
+
+        {/* Predicted trajectory */}
+        {(() => {
+          const dailyRate = windowDays > 1 ? scoreDelta / windowDays : 0
+          const projected30 = Math.min(100, Math.max(0, Math.round(lastScore + dailyRate * 30)))
+          const willPass = projected30 >= 70
+          const color = willPass ? '#15803d' : projected30 >= 50 ? '#a16207' : '#dc2626'
+          const bg    = willPass ? '#f0fdf4' : projected30 >= 50 ? '#fffbeb' : '#fef2f2'
+          return (
+            <div style={{ marginTop: '12px', padding: '12px', background: bg, borderRadius: '10px' }}>
+              <p style={{ fontSize: '12px', fontWeight: '700', color, marginBottom: '3px' }}>
+                30-Day Trajectory
+              </p>
+              <p style={{ fontSize: '13px', color: '#374151' }}>
+                At your current pace, your score will be{' '}
+                <strong style={{ color }}>{projected30}/100</strong> in 30 days —{' '}
+                {willPass
+                  ? 'on track for DOT readiness ✓'
+                  : 'below the 70-point DOT-ready threshold. Increase workout frequency to improve.'}
+              </p>
+            </div>
+          )
+        })()}
       </div>
 
       {/* Summary stats */}

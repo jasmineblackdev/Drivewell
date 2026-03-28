@@ -27,7 +27,7 @@ const ForFleets = () => (
       <div className="container">
         <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '24px', textAlign: 'center' }}>
           {[
-            ['$2,500+', 'Average cost of a DOT failure'],
+            ['$15,000+', 'Average cost of a DOT driver failure (ATRI)'],
             ['40%',     'Reduction in DOT failures with DriveWell'],
             ['5–15%',   'Potential insurance premium reduction'],
             ['$10',     'Per driver per month on Growth plan'],
