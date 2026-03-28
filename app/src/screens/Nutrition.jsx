@@ -246,7 +246,7 @@ const MacroBar = ({ label, value, target, color, unit = 'g' }) => {
 }
 
 const Nutrition = () => {
-  const { onboarding: ob } = useOnboarding()
+  const { data: ob } = useOnboarding()
   const [log, setLog]             = useState(loadTodayLog)
   const [activeTab, setActiveTab] = useState('log')
   const [added, setAdded]         = useState(null)
